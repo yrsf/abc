@@ -11,6 +11,7 @@
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -32,3 +33,14 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# yarn
+/.yarn
+.yarnclean
+.yarnrc.yml
+
+# tina
+/.tina/__generated__
+
+# idea
+/.idea
