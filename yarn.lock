@@ -13805,7 +13805,7 @@ __metadata:
     react: "npm:17.0.2"
     react-animate-height: "npm:^2.0.23"
     react-dom: "npm:17.0.2"
-    react-hook-form: "npm:^7.17.4"
+    react-hook-form: "npm:^7.51.4"
     react-mailchimp-subscribe: "npm:^2.1.3"
     react-schemaorg: "npm:^2.0.0"
     react-share: "npm:^4.4.1"
@@ -15168,12 +15168,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.17.4":
-  version: 7.17.4
-  resolution: "react-hook-form@npm:7.17.4"
+"react-hook-form@npm:^7.51.4":
+  version: 7.51.4
+  resolution: "react-hook-form@npm:7.51.4"
   peerDependencies:
-    react: ^16.8.0 || ^17
-  checksum: 10c0/e7f950087daaf1d381bf630d0558dce184707ea8fadd17163ef5bf0216ff805adaa39a07cde4a165f841277aa9c80113ec8d8edab93d1fa991d6ba98625cff85
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 10c0/73b585adb80bd99ae1fc21208e389fd9830f82c8c8bab4b6c4d5853f858a3259b8dc8fd4aa4608a0bd95bc69883c9332f2fa5e8c80dc17dbb2866de9744dbdb6
   languageName: node
   linkType: hard
 
