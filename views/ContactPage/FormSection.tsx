@@ -7,9 +7,9 @@ import { media } from 'utils/media';
 import MailSentState from '../../components/MailSentState';
 
 interface EmailPayload {
-  name: string;
-  email: string;
-  description: string;
+  name?: string;
+  email?: string;
+  description?: string;
 }
 
 export default function FormSection() {

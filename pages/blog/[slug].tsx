@@ -2,9 +2,12 @@ import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { staticRequest } from 'tinacms';
+import { useTina } from 'tinacms/dist/react';
+
 import Container from 'components/Container';
 import MDXRichText from 'components/MDXRichText';
+import { client } from 'tina/__generated__/client';
+import type { Post, Query } from 'tina/__generated__/types';
 import { NonNullableChildrenDeep } from 'types';
 import { formatDate } from 'utils/formatDate';
 import { media } from 'utils/media';
@@ -14,7 +17,6 @@ import MetadataHead from 'views/SingleArticlePage/MetadataHead';
 import OpenGraphHead from 'views/SingleArticlePage/OpenGraphHead';
 import ShareWidget from 'views/SingleArticlePage/ShareWidget';
 import StructuredDataHead from 'views/SingleArticlePage/StructuredDataHead';
-import { Posts, PostsDocument, Query } from '.tina/__generated__/types';
 
 export default function SingleArticlePage(props: InferGetStaticPropsType<typeof getStaticProps>) {
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -49,13 +51,15 @@ export default function SingleArticlePage(props: InferGetStaticPropsType<typeof 
     }
   }, []);
 
-  const { slug, data } = props;
-  const content = data.getPostsDocument.data.body;
+  const { slug } = props;
+  const { data } = useTina({ data: props.data, query: props.query, variables: props.variables });
+
+  const content = data.post.body;
 
   if (!data) {
     return null;
   }
-  const { title, description, date, tags, imageUrl } = data.getPostsDocument.data as NonNullableChildrenDeep<Posts>;
+  const { title, description, date, tags, imageUrl } = data.post as NonNullableChildrenDeep<Post>;
   const meta = { title, description, date: date, tags, imageUrl, author: '' };
   const formattedDate = formatDate(new Date(date));
   const absoluteImageUrl = imageUrl.replace(/\/+/, '/');
@@ -63,7 +67,7 @@ export default function SingleArticlePage(props: InferGetStaticPropsType<typeof 
     <>
       <Head>
         <noscript>
-          <link rel="stylesheet" href="/prism-theme.css" />
+          <link href="/prism-theme.css" />
         </noscript>
       </Head>
       <OpenGraphHead slug={slug} {...meta} />
@@ -79,34 +83,33 @@ export default function SingleArticlePage(props: InferGetStaticPropsType<typeof 
 }
 
 export async function getStaticPaths() {
-  const postsListData = await staticRequest({
+  const postsListData = await client.request({
     query: `
       query PostsSlugs{
-        getPostsList{
+        postConnection {
           edges{
             node{
-              sys{
+              _sys{
                 basename
               }
             }
           }
         }
       }
-    `,
-    variables: {},
-  });
+    `}, {}
+  );
 
-  if (!postsListData) {
+  if (!postsListData.data) {
     return {
       paths: [],
       fallback: false,
     };
   }
 
-  type NullAwarePostsList = { getPostsList: NonNullableChildrenDeep<Query['getPostsList']> };
+  type NullAwarePostsList = { postConnection: NonNullableChildrenDeep<Query['postConnection']> };
   return {
-    paths: (postsListData as NullAwarePostsList).getPostsList.edges.map((edge) => ({
-      params: { slug: normalizePostName(edge.node.sys.basename) },
+    paths: (postsListData.data as NullAwarePostsList).postConnection.edges.map((edge) => ({
+      params: { slug: normalizePostName(edge.node._sys.basename) },
     })),
     fallback: false,
   };
@@ -118,29 +121,11 @@ function normalizePostName(postName: string) {
 
 export async function getStaticProps({ params }: GetStaticPropsContext<{ slug: string }>) {
   const { slug } = params as { slug: string };
-  const variables = { relativePath: `${slug}.mdx` };
-  const query = `
-    query BlogPostQuery($relativePath: String!) {
-      getPostsDocument(relativePath: $relativePath) {
-        data {
-          title
-          description
-          date
-          tags
-          imageUrl
-          body
-        }
-      }
-    }
-  `;
 
-  const data = (await staticRequest({
-    query: query,
-    variables: variables,
-  })) as { getPostsDocument: PostsDocument };
+  const res = await client.queries.post({ relativePath: `${slug}.mdx` });
 
   return {
-    props: { slug, variables, query, data },
+    props: { slug, variables: res.variables, query: res.query, data: res.data },
   };
 }
 

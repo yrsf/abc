@@ -1,4 +1,4 @@
-import NextImage, { ImageProps } from 'next/image';
+import NextImage, { ImageProps } from "next/image";
 import React from 'react';
 import styled from 'styled-components';
 
@@ -13,13 +13,15 @@ export default function ArticleImage({ src, caption, ...rest }: ArticleImageProp
       <ImageWrapper>
         <NextImage
           src={src}
-          alt={caption || 'Article Image'}
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mPkj6+vBwAC4AFuNSmtGAAAAABJRU5ErkJggg=="
-          layout="fill"
-          objectFit="cover"
           {...rest}
-        />
+          alt={caption || 'Article Image'}
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: "cover"
+          }} />
       </ImageWrapper>
       <Caption>{caption}</Caption>
     </Wrapper>

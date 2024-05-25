@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNewsletterModalContext } from 'contexts/newsletter-modal.context';
@@ -20,7 +20,7 @@ type ScrollingDirections = 'up' | 'down' | 'none';
 type NavbarContainerProps = { hidden: boolean; transparent: boolean };
 
 export default function Navbar({ items }: NavbarProps) {
-  const router = useRouter();
+  const pathName = usePathname();
   const { toggle } = Drawer.useDrawer();
   const [scrollingDirection, setScrollingDirection] = useState<ScrollingDirections>('none');
 
@@ -28,10 +28,10 @@ export default function Navbar({ items }: NavbarProps) {
   const lastRoute = useRef('');
   const stepSize = useRef(50);
 
-  useScrollPosition(scrollPositionCallback, [router.asPath], undefined, undefined, 50);
+  useScrollPosition(scrollPositionCallback, [pathName], undefined, undefined, 50);
 
   function scrollPositionCallback({ currPos }: ScrollPositionEffectProps) {
-    const routerPath = router.asPath;
+    const routerPath = pathName;
     const hasRouteChanged = routerPath !== lastRoute.current;
 
     if (hasRouteChanged) {
@@ -67,7 +67,7 @@ export default function Navbar({ items }: NavbarProps) {
   return (
     <NavbarContainer hidden={isNavbarHidden} transparent={isTransparent}>
       <Content>
-        <NextLink href="/" passHref>
+        <NextLink href="/" passHref legacyBehavior>
           <LogoWrapper>
             <Logo />
           </LogoWrapper>
@@ -102,7 +102,7 @@ function NavItem({ href, title, outlined }: SingleNavItem) {
   return (
     <NavItemWrapper outlined={outlined}>
       <NextLink href={href} passHref>
-        <a>{title}</a>
+        {title}
       </NextLink>
     </NavItemWrapper>
   );
