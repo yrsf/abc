@@ -18,7 +18,7 @@
     "@svgr/webpack": "^8.1.0",
     "cross-env": "^7.0.3",
     "css-in-js-media": "^2.0.1",
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.6.0",
     "gray-matter": "^4.0.3",
     "lodash": "^4.17.21",
     "next": "14.2.3",
